@@ -9,10 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body onload="scrollDown()">
     <form id="chat">
       <input type="text" name="username" placeholder="Digite seu usuário" />
-      <div class="messages" style="overflow: auto"></div>
+      <div class="messages"></div>
       <input type="text" name="message" placeholder="Digite sua mensagem" />
       <button type="submit">Enviar</button>
     </form>
@@ -54,6 +54,13 @@
       getIp(function(ip) {
         var userip = ip;
       });
+
+      function scrollDown() {
+        var contador = 0;
+        var el = document.querySelector(".messages");
+        var height = el.scrollHeight;
+        el.scrollTop = height;
+      }
 
       function renderMessage(message) {
         if (message.ip != userip) {
@@ -99,6 +106,8 @@
           };
 
           renderMessage(messageObject);
+
+          scrollDown();
 
           socket.emit("sendMessage", messageObject);
           $("input[name=message").val("");
