@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discord</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body onload="scrollDown()">
+    <div class="discordApp">
+      <div class="server">
+        <div class="server--icon"><span>Home</span></div>
+        <div class="server--seperator"></div>
+        <div class="server--icon active"><span>Lixos</span></div>
+        <div class="server--icon"><span>Dev</span></div>
+        <div class="server--icon"><span>Markt</span></div>
+        <div class="server--icon"><span>Meme</span></div>
+        <div class="server--seperator"></div>
+        <div class="server--icon"><span>Social</span></div>
+      </div>
+      <div class="chatOuter">
+        <div class="channels">
+          <nav>
+            <h3>Lucas</h3>
+            <span>\/</span>
+          </nav>
+          <div class="channels--list">
+            <div class="channels--list-item">
+              <div class="channels--list-header">
+                <h4><span>\/</span>Voice Channels</h4>
+                <span>Plus</span>
+              </div>
+              <div class="channels--list-content">
+                <div class="channels--list-content-item">
+                  <span>></span>
+                  <h5>General</h5>
+                </div>
+                <div class="channels--list-content-item">
+                  <span>></span>
+                  <h5>Memes</h5>
+                </div>
+                <div class="channels--list-content-item">
+                  <span>></span>
+                  <h5>Pair programming</h5>
+                </div>
+                <div class="channels--list-content-item">
+                  <span>></span>
+                  <h5>Links</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="channels--userArea">
+            <div class="name">
+              <span class="userIcon">a</span>
+              <div class="title">
+                <!-- <h4>Lucas</h4> -->
+                    <input type="text" class="inputName" name="username" placeholder="Digite seu usuário" />
+                <!-- <span class="subText">sub text</span> -->
+              </div>
+            </div>
+            <!-- <div class="icons">
+              <span>i</span> <span>i</span> <span>i</span>
+            </div> -->
+          </div>
+        </div>
+        <div class="chat">
+          <nav>
+            <div class="header">
+              <span>#</span>
+              <h2>
+                General
+                <h2></h2>
+              </h2>
+            </div>
+            <div class="icons">icons</div>
+          </nav>
+          <div class="chat--inner">
+            <div class="messages">
+              <div class="messages--received"></div>
+              <!-- <div class="messages--send">
+              </div> -->
+            </div>
+            <div class="members">Lucas</div>
+          </div>
+          <div class="boxSend">
+              <form id="chat">
+                <input type="text" class="inputSend" placeholder="Digite sua mensagem" />
+                <button class="emojiPicker" type="button">😎</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+        var socket = io("/");
+  
+        function getIp(callback) {
+          function response(s) {
+            callback(window.userip);
+  
+            s.onload = s.onerror = null;
+            document.body.removeChild(s);
+          }
+  
+          function trigger() {
+            window.userip = false;
+  
+            var s = document.createElement("script");
+            s.async = true;
+            s.onload = function() {
+              response(s);
+            };
+            s.onerror = function() {
+              response(s);
+            };
+  
+            s.src = "https://l2.io/ip.js?var=userip";
+            document.body.appendChild(s);
+          }
+  
+          if (/^(interactive|complete)$/i.test(document.readyState)) {
+            trigger();
+          } else {
+            document.addEventListener("DOMContentLoaded", trigger);
+          }
+        }
+  
+        getIp(function(ip) {
+          var userip = ip;
+        });
+  
+        function scrollDown() {
+          var contador = 0;
+          var el = document.querySelector(".messages");
+          var height = el.scrollHeight;
+          el.scrollTop = height;
+        }
+  
+        function renderMessage(message) {
+            if (message.ip != userip) {
+                $(".messages--received").append(
+                `<div class="messageContent">
+                    <div class="author1">${message.author}</div>
+                    <div class="messageText">${message.message}</div>
+                </div>
+                `
+            );
+        } else {
+            $(".messages--received").append(
+                `<div class="messageContent">
+                    <div class="author2">${message.author}</div>
+                    <div class="messageText">${message.message}</div>
+                </div>
+                `
+            );
+        }
+        // $(".messages--received").append(
+        //         `<div class="messageContent">
+        //             <div class="author">${message.author}</div>
+        //             <div class="messageText">${message.message}</div>
+        //         </div>
+        //         `
+        //     );
+            scrollDown();
+        }
+  
+        socket.on("previousMessages", function(messages) {
+          for (message of messages) {
+            renderMessage(message);
+          }
+        });
+  
+        socket.on("receivedMessage", function(message) {
+          renderMessage(message);
+        });
+  
+        $("#chat").submit(function(event) {
+          event.preventDefault();
+  
+          var author = $("input[name=username").val();
+          var message = $(".inputSend").val();
+  
+          if (author.length && message.length) {
+            var messageObject = {
+              author: author,
+              message: message,
+              ip: userip
+            };
+  
+            renderMessage(messageObject);
+  
+            scrollDown();
+  
+            socket.emit("sendMessage", messageObject);
+            $(".inputSend").val("");
+          }
+        });
+      </script>
+
+    <script src="fgEmojiPicker.js"></script>
+    <script>
+        const emojiPicker = new FgEmojiPicker({
+            trigger: ['button'],
+            removeOnSelection: false,
+            closeButton: true,
+            position: ['top', 'left'],
+            preFetch: true,
+            insertInto: document.querySelector('.inputSend'),
+            emit(obj, triggerElement) {
+                console.log(obj, triggerElement);
+            }
+        });
+    </script>
+  </body>
+</html>
