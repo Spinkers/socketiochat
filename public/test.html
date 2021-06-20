@@ -24,7 +24,7 @@
       <div class="chatOuter">
         <div class="channels">
           <nav>
-            <h3>Lucas</h3>
+            <h3 id="usernameTitle">Username</h3>
             <span>\/</span>
           </nav>
           <div class="channels--list">
@@ -58,7 +58,7 @@
               <span class="userIcon">a</span>
               <div class="title">
                 <!-- <h4>Lucas</h4> -->
-                    <input type="text" class="inputName" name="username" placeholder="Digite seu usuário" />
+                    <input type="text" onchange="setUsername(this.value)" class="inputName" name="username" placeholder="Digite seu usuário" />
                 <!-- <span class="subText">sub text</span> -->
               </div>
             </div>
@@ -159,14 +159,11 @@
                 `
             );
         }
-        // $(".messages--received").append(
-        //         `<div class="messageContent">
-        //             <div class="author">${message.author}</div>
-        //             <div class="messageText">${message.message}</div>
-        //         </div>
-        //         `
-        //     );
             scrollDown();
+        }
+
+        function setUsername(username) {
+          $("#usernameTitle").text(username);
         }
   
         socket.on("previousMessages", function(messages) {
