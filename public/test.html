@@ -25,29 +25,29 @@
         <div class="channels">
           <nav>
             <h3 id="usernameTitle">Username</h3>
-            <span>\/</span>
+            <span>⮟</span>
           </nav>
           <div class="channels--list">
             <div class="channels--list-item">
               <div class="channels--list-header">
-                <h4><span>\/</span>Voice Channels</h4>
-                <span>Plus</span>
+                <h4><span>🏴‍☠️</span>Channels</h4>
+                <span>+</span>
               </div>
               <div class="channels--list-content">
                 <div class="channels--list-content-item">
-                  <span>></span>
+                  <span>😎</span>
                   <h5>General</h5>
                 </div>
                 <div class="channels--list-content-item">
-                  <span>></span>
+                  <span>🔒</span>
                   <h5>Memes</h5>
                 </div>
                 <div class="channels--list-content-item">
-                  <span>></span>
+                  <span>🔒</span>
                   <h5>Pair programming</h5>
                 </div>
                 <div class="channels--list-content-item">
-                  <span>></span>
+                  <span>🔒</span>
                   <h5>Links</h5>
                 </div>
               </div>
@@ -55,10 +55,13 @@
           </div>
           <div class="channels--userArea">
             <div class="name">
-              <span class="userIcon">a</span>
+              <select class="userIcon" onchange="setUsername()">
+                <option value="🧑🏻">🧑🏻</option>
+                <option value="👩🏻">👩🏻</option>
+              </select>
               <div class="title">
                 <!-- <h4>Lucas</h4> -->
-                    <input type="text" onchange="setUsername(this.value)" class="inputName" name="username" placeholder="Digite seu usuário" />
+                    <input type="text" onchange="setUsername()" class="inputName" name="username" placeholder="Digite seu usuário" />
                 <!-- <span class="subText">sub text</span> -->
               </div>
             </div>
@@ -72,7 +75,7 @@
             <div class="header">
               <span>#</span>
               <h2>
-                General
+                General 🏴‍☠️
                 <h2></h2>
               </h2>
             </div>
@@ -84,7 +87,7 @@
               <!-- <div class="messages--send">
               </div> -->
             </div>
-            <div class="members">Lucas</div>
+            <div class="members"><ul class="memberList"><li id="member">🤖 Alisha [BOT]</li></ul></div>
           </div>
           <div class="boxSend">
               <form id="chat">
@@ -162,9 +165,18 @@
             scrollDown();
         }
 
-        function setUsername(username) {
-          $("#usernameTitle").text(username);
+        function setUsername() {
+          var username = $(".inputName").val();
+          var userIcon = $(".userIcon").val();
+          $("#usernameTitle").text(`${userIcon} ${username}`);
         }
+
+        socket.on("users", function(users) {
+          $(".memberList").text('');
+          for(var i = 0; i < users.length; i++){
+            $(".memberList").append(`<li>${users[i]}</li>`);
+        }
+        });
   
         socket.on("previousMessages", function(messages) {
           for (message of messages) {
@@ -179,10 +191,13 @@
         $("#chat").submit(function(event) {
           event.preventDefault();
   
-          var author = $("input[name=username").val();
+          var username = $(".inputName").val();
+          var userIcon = $(".userIcon").val();
+
+          var author = `${userIcon} ${username}`;
           var message = $(".inputSend").val();
   
-          if (author.length && message.length) {
+          if (username.length && message.length) {
             var messageObject = {
               author: author,
               message: message,
@@ -202,7 +217,7 @@
     <script src="fgEmojiPicker.js"></script>
     <script>
         const emojiPicker = new FgEmojiPicker({
-            trigger: ['button'],
+            trigger: ['.emojiPicker'],
             removeOnSelection: false,
             closeButton: true,
             position: ['top', 'left'],

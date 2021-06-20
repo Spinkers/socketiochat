@@ -15,15 +15,23 @@ app.use("/", (req, res) => {
 });
 
 let messages = [];
+let users = ['🤖 Alisha [BOT]'];
 
 io.on("connection", socket => {
   console.log(`Socket conectado: ${socket.id}`);
 
   socket.emit("previousMessages", messages);
-
+  socket.emit("users", users);
+  
   socket.on("sendMessage", data => {
     console.log(data);
     messages.push(data);
+    
+    if(!users.includes(data.author)){
+      users.push(data.author);
+    }
+
+    io.emit("users", users);
     socket.broadcast.emit("receivedMessage", data);
   });
 });
