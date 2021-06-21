@@ -56,12 +56,14 @@ io.on("connection", socket => {
 
       users = users.filter(item => item.socketId !== socket.id)
 
-      io.emit("receivedMessage", {
-        author: users[0].username,
-        message: `${userOffline.username} saiu 🙁`,
-        userIcon: users[0].userIcon,
-        ip: '000.000.000.000'
-      });
+      if(userOffline){
+        io.emit("receivedMessage", {
+          author: users[0].username,
+          message: `${userOffline.username} saiu 🙁`,
+          userIcon: users[0].userIcon,
+          ip: '000.000.000.000'
+        });
+      }
 
       io.emit("users", users);
     }
