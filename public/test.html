@@ -148,7 +148,7 @@
             if (message.ip != userip) {
                 $(".messages--received").append(
                 `<div class="messageContent">
-                    <div class="author1">${message.author}</div>
+                    <div class="author1">${message.userIcon} ${message.author}</div>
                     <div class="messageText">${message.message}</div>
                 </div>
                 `
@@ -156,7 +156,7 @@
         } else {
             $(".messages--received").append(
                 `<div class="messageContent">
-                    <div class="author2">${message.author}</div>
+                    <div class="author2">${message.userIcon} ${message.author}</div>
                     <div class="messageText">${message.message}</div>
                 </div>
                 `
@@ -174,7 +174,7 @@
         socket.on("users", function(users) {
           $(".memberList").text('');
           for(var i = 0; i < users.length; i++){
-            $(".memberList").append(`<li>${users[i]}</li>`);
+            $(".memberList").append(`<li>${users[i].userIcon} ${users[i].username}</li>`);
         }
         });
   
@@ -187,6 +187,9 @@
         socket.on("receivedMessage", function(message) {
           renderMessage(message);
         });
+
+
+        socket.on('disconnect');
   
         $("#chat").submit(function(event) {
           event.preventDefault();
@@ -194,13 +197,14 @@
           var username = $(".inputName").val();
           var userIcon = $(".userIcon").val();
 
-          var author = `${userIcon} ${username}`;
+          var author = `${username}`;
           var message = $(".inputSend").val();
   
           if (username.length && message.length) {
             var messageObject = {
-              author: author,
-              message: message,
+              author,
+              message,
+              userIcon,
               ip: userip
             };
   
