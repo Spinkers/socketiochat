@@ -214,6 +214,10 @@
   
             socket.emit("sendMessage", messageObject);
             $(".inputSend").val("");
+          }else{
+            let usernameByPrompt = prompt('Qual seu nome?');
+            $(".inputName").val(usernameByPrompt);
+            setUsername();
           }
         });
       </script>
